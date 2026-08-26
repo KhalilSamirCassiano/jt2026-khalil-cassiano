@@ -106,12 +106,12 @@ A decisão final é:
 - **Drivers:** proximidade da praia, Superhost, capacidade de hóspedes, banheiros e histórico do anfitrião têm associação positiva com receita. O modelo é explicativo, não causal.
 - **Compra hoje:** buscaria um apartamento pronto de 2 quartos em Morretes, mas somente com desconto. No candidato indicativo de R$ 458 mil, o investimento total estimado é R$ 590,9 mil e o retorno líquido é 2,54% no cenário-base e 3,94% no alto. Ao preço pedido, a decisão-base é **no-go**; para atingir 3% líquido, o teto estimado de compra é cerca de R$ 372 mil.
 
-Entregáveis locais:
+Entregáveis:
 
-- Planilha executiva: `analise_investimento_itapema.xlsx`
-- Relatório completo: `relatorio.md`
-- README de execução e tese: `README.md`
-- Log integral: `ai-log/conversa-completa.md`
+- Planilha executiva: [analise_investimento_itapema.xlsx](<C:/Users/Khalil Cassiano/Documents/Codex/2026-08-26/estou-fazendo-um-freelancer-de-uma/outputs/seazone-itapema/analise_investimento_itapema.xlsx>) :codex-file-citation{filePath="C:\\Users\\Khalil Cassiano\\Documents\\Codex\\2026-08-26\\estou-fazendo-um-freelancer-de-uma\\outputs\\seazone-itapema\\analise_investimento_itapema.xlsx" purpose="output"}
+- Relatório completo: [relatorio.md](<C:/Users/Khalil Cassiano/Documents/Codex/2026-08-26/estou-fazendo-um-freelancer-de-uma/outputs/seazone-itapema/relatorio.md>)
+- README de execução e tese: [README.md](<C:/Users/Khalil Cassiano/Documents/Codex/2026-08-26/estou-fazendo-um-freelancer-de-uma/outputs/seazone-itapema/README.md>)
+- Log integral: [conversa-completa.md](<C:/Users/Khalil Cassiano/Documents/Codex/2026-08-26/estou-fazendo-um-freelancer-de-uma/outputs/seazone-itapema/ai-log/conversa-completa.md>)
 
 A única pendência manual é substituir, na primeira linha do README, o marcador pelo link público do vídeo de até três minutos.
 
