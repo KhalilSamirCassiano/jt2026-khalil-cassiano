@@ -17,7 +17,16 @@ Análise do mercado de Airbnb e de imóveis à venda em Itapema para responder o
 
 ### Posição sobre compactos no Centro
 
-A tese de **studio/1 quarto no Centro não é sustentada** por esta base: o Centro perde para Meia Praia em receita, e o segmento de 1 quarto no Centro apresenta yield líquido base mediano de aproximadamente **0,9%**, abaixo do 2 quartos em Morretes (**1,6%**) e do 2 quartos em Meia Praia (**1,3%**).
+**Veredito: a tese não é sustentada e não deve orientar a compra.** Há uma ressalva: a base analítica não contém nenhum studio no Centro, portanto não é possível validar diretamente a parte “studio” da hipótese. A conclusão quantitativa vale para apartamentos de **1 quarto**, onde há 70 pares Airbnb na amostra estrita e 19 ofertas de venda comparáveis.
+
+| Métrica | Centro, 1 quarto | Morretes, 2 quartos | Vantagem de Morretes |
+|---|---:|---:|---:|
+| Receita proxy mediana — 90 dias | R$ 10,0 mil | R$ 11,6 mil | +15,9% |
+| Investimento total mediano | R$ 1,02 mi | R$ 939,5 mil | R$ 80 mil menor |
+| NOI anual mediano | R$ 9,5 mil | R$ 15,0 mil | +57,8% |
+| Yield líquido mediano | 0,93% | 1,60% | +71,2% |
+
+Em 5.000 réplicas de bootstrap que reamostram receita, preço, condomínio e IPTU, Morretes 2 quartos apresenta yield superior ao Centro 1 quarto em **98,7%** dos casos. Os intervalos estimados são **0,69%–1,27%** para Centro 1 quarto e **1,15%–1,95%** para Morretes 2 quartos. Isso não prova que nenhum studio específico possa funcionar, mas mostra que a tese agregada não tem suporte suficiente para substituir a recomendação de 2 quartos.
 
 ## Estrutura do repositório
 
@@ -32,6 +41,8 @@ A tese de **studio/1 quarto no Centro não é sustentada** por esta base: o Cent
 ├── outputs/
 │   └── analysis_results/
 │       ├── analysis_metadata.json
+│       ├── compact_thesis_test.csv
+│       ├── compact_thesis_test.json
 │       ├── driver_model.csv
 │       ├── investment_candidates.csv
 │       ├── investment_segment_returns.csv
@@ -99,5 +110,4 @@ Todas as premissas são editáveis na aba **Premissas** da planilha.
 ## Contexto externo
 
 A Seazone se descreve como uma proptech de gestão e investimento em aluguel por temporada, com tecnologia e dados no centro da operação ([Seazone — Quem somos](https://seazone.com.br/institucional/quem-somos)). Itapema tinha população estimada de 86.116 pessoas em 2025 ([IBGE](https://www.ibge.gov.br/cidades-e-estados/sc/itapema.html)). Em abril de 2026, o FipeZAP apontou preço médio anunciado de R$ 15.179/m² e alta de 8,10% em 12 meses ([FipeZAP](https://downloads.fipe.org.br/indices/fipezap/fipezap-202604-residencial-venda.pdf)). Em agosto de 2026, a meta Selic era 14,00% a.a., elevando o custo de oportunidade de um yield operacional abaixo de 4% ([Banco Central](https://www.bcb.gov.br/controleinflacao/historicotaxasjuros)).
-
 
