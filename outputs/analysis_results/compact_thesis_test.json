@@ -1,0 +1,10 @@
+{
+  "studio_centro_airbnb_count": 0,
+  "studio_centro_strict_count": 0,
+  "morretes_2q_revenue_premium_vs_centro_1q": 0.15851894508268205,
+  "morretes_2q_noi_premium_vs_centro_1q": 0.5776272220058936,
+  "morretes_2q_yield_premium_vs_centro_1q": 0.7116195654326622,
+  "bootstrap_probability_morretes_2q_yield_gt_centro_1q": 0.9872,
+  "bootstrap_repetitions": 5000,
+  "verdict": "Não sustentada: não há studios no Centro na base; 1 quarto no Centro tem receita, NOI e yield inferiores a 2 quartos em Morretes."
+}
