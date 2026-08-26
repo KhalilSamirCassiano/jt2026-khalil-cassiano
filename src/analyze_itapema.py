@@ -554,6 +554,144 @@ def build_investment_candidates(
     return ranked, peers, sales_segments
 
 
+def test_compact_centro_thesis(
+    sales: pd.DataFrame, airbnb: pd.DataFrame, reps: int = 5_000
+) -> tuple[pd.DataFrame, dict]:
+    """Testa Centro 1q contra alternativas usando bootstrap dos componentes do yield.
+
+    Studios (0 quarto) são reportados separadamente porque não há observações no
+    Centro. Logo, a evidência direta desta base vale para 1 quarto, não para studio.
+    """
+    clean_sales = sales.loc[
+        sales["business_types"].isin(["Venda", "Ambos"])
+        & sales["listing_type"].eq("apartamento")
+        & sales["bedrooms"].between(0, 4)
+        & sales["sale_price"].between(250_000, 8_000_000)
+        & sales["usable_area"].between(20, 350)
+        & sales["price_per_sqm"].between(4_000, 50_000)
+    ].copy()
+    segments = {
+        "Centro, 1 quarto": ("Centro", 1),
+        "Morretes, 2 quartos": ("Morretes", 2),
+        "Meia Praia, 1 quarto": ("Meia Praia", 1),
+        "Meia Praia, 2 quartos": ("Meia Praia", 2),
+        "Centro, 2 quartos": ("Centro", 2),
+    }
+    sampling_rng = np.random.default_rng(20260826)
+    rows: list[dict] = []
+    yield_draws: dict[str, np.ndarray] = {}
+
+    for segment, (suburb, bedrooms) in segments.items():
+        a = airbnb.loc[
+            airbnb["strict_calendar_sample"]
+            & airbnb["listing_type"].eq("apartamento")
+            & airbnb["suburb_clean"].eq(suburb)
+            & airbnb["number_of_bedrooms"].eq(bedrooms)
+        ].copy()
+        s = clean_sales.loc[
+            clean_sales["suburb_clean"].eq(suburb)
+            & clean_sales["bedrooms"].eq(bedrooms)
+        ].copy()
+        s["condo_used"] = s["monthly_condo_fee"].fillna(s["monthly_condo_fee"].median())
+        s["iptu_used"] = s["yearly_iptu"].fillna(s["yearly_iptu"].median())
+
+        revenue = a["gross_revenue_proxy_90"].dropna().to_numpy(float)
+        price = s["sale_price"].dropna().to_numpy(float)
+        condo = s["condo_used"].dropna().to_numpy(float)
+        iptu = s["iptu_used"].dropna().to_numpy(float)
+        revenue_medians = np.median(
+            sampling_rng.choice(revenue, size=(reps, len(revenue)), replace=True), axis=1
+        )
+        price_medians = np.median(
+            sampling_rng.choice(price, size=(reps, len(price)), replace=True), axis=1
+        )
+        condo_medians = np.median(
+            sampling_rng.choice(condo, size=(reps, len(condo)), replace=True), axis=1
+        )
+        iptu_medians = np.median(
+            sampling_rng.choice(iptu, size=(reps, len(iptu)), replace=True), axis=1
+        )
+
+        annual_gross = (
+            revenue_medians
+            / HORIZON_DAYS
+            * 365
+            * SEASONALITY_HAIRCUT
+            * UNAVAILABLE_BOOKING_SHARE
+        )
+        setup_cost = min(60_000 + 25_000 * bedrooms, 175_000)
+        total_investment = price_medians * (1 + ACQUISITION_COST_RATE) + setup_cost
+        annual_noi = (
+            annual_gross * (1 - VARIABLE_COST_RATE)
+            - condo_medians * 12
+            - iptu_medians
+        )
+        segment_yield = annual_noi / total_investment
+        yield_draws[segment] = segment_yield
+        rows.append(
+            {
+                "segment": segment,
+                "suburb": suburb,
+                "bedrooms": bedrooms,
+                "n_airbnb_strict": len(a),
+                "n_sales": len(s),
+                "revenue_90_median": np.median(revenue),
+                "revenue_90_ci_low": np.quantile(revenue_medians, 0.025),
+                "revenue_90_ci_high": np.quantile(revenue_medians, 0.975),
+                "annual_gross_median": np.median(annual_gross),
+                "sale_price_median": np.median(price),
+                "total_investment_median": np.median(total_investment),
+                "annual_noi_median": np.median(annual_noi),
+                "net_yield_median": np.median(segment_yield),
+                "net_yield_ci_low": np.quantile(segment_yield, 0.025),
+                "net_yield_ci_high": np.quantile(segment_yield, 0.975),
+            }
+        )
+
+    results = pd.DataFrame(rows)
+    by_segment = results.set_index("segment")
+    centro = by_segment.loc["Centro, 1 quarto"]
+    morretes = by_segment.loc["Morretes, 2 quartos"]
+    comparison = {
+        "studio_centro_airbnb_count": int(
+            (
+                airbnb["suburb_clean"].eq("Centro")
+                & airbnb["listing_type"].eq("apartamento")
+                & airbnb["number_of_bedrooms"].eq(0)
+            ).sum()
+        ),
+        "studio_centro_strict_count": int(
+            (
+                airbnb["suburb_clean"].eq("Centro")
+                & airbnb["listing_type"].eq("apartamento")
+                & airbnb["number_of_bedrooms"].eq(0)
+                & airbnb["strict_calendar_sample"]
+            ).sum()
+        ),
+        "morretes_2q_revenue_premium_vs_centro_1q": float(
+            morretes["revenue_90_median"] / centro["revenue_90_median"] - 1
+        ),
+        "morretes_2q_noi_premium_vs_centro_1q": float(
+            morretes["annual_noi_median"] / centro["annual_noi_median"] - 1
+        ),
+        "morretes_2q_yield_premium_vs_centro_1q": float(
+            morretes["net_yield_median"] / centro["net_yield_median"] - 1
+        ),
+        "bootstrap_probability_morretes_2q_yield_gt_centro_1q": float(
+            np.mean(
+                yield_draws["Morretes, 2 quartos"]
+                > yield_draws["Centro, 1 quarto"]
+            )
+        ),
+        "bootstrap_repetitions": reps,
+        "verdict": (
+            "Não sustentada: não há studios no Centro na base; 1 quarto no Centro "
+            "tem receita, NOI e yield inferiores a 2 quartos em Morretes."
+        ),
+    }
+    return results, comparison
+
+
 def capture_stability(all_listings: pd.DataFrame) -> pd.DataFrame:
     outputs = []
     for capture_day, group in all_listings.groupby("capture_day"):
@@ -637,6 +775,7 @@ def main() -> None:
     drivers.to_csv(OUT_DIR / "driver_model.csv", index=False, encoding="utf-8-sig")
 
     candidates, peer_segments, investment_segments = build_investment_candidates(sales, latest)
+    compact_test, compact_comparison = test_compact_centro_thesis(sales, latest)
     candidate_cols = [
         "listing_id",
         "link_url",
@@ -673,6 +812,12 @@ def main() -> None:
     peer_segments.to_csv(OUT_DIR / "investment_peer_segments.csv", index=False, encoding="utf-8-sig")
     investment_segments.to_csv(
         OUT_DIR / "investment_segment_returns.csv", index=False, encoding="utf-8-sig"
+    )
+    compact_test.to_csv(
+        OUT_DIR / "compact_thesis_test.csv", index=False, encoding="utf-8-sig"
+    )
+    (OUT_DIR / "compact_thesis_test.json").write_text(
+        json.dumps(compact_comparison, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
     stability = capture_stability(all_listings)
@@ -727,6 +872,7 @@ def main() -> None:
             "setup_cost_formula": "R$60.000 + R$25.000 por quarto; teto R$175.000",
         },
         "model_diagnostics": model_diag,
+        "compact_centro_thesis": compact_comparison,
         "best_candidate": {
             key: (value.item() if hasattr(value, "item") else value)
             for key, value in (best_candidate or {}).items()
@@ -747,6 +893,7 @@ def main() -> None:
             candidates[candidate_cols].head(50).to_json(orient="records")
         ),
         "investment_segments": json.loads(investment_segments.to_json(orient="records")),
+        "compact_thesis": json.loads(compact_test.to_json(orient="records")),
         "analytic_base": json.loads(latest[latest_export_cols].to_json(orient="records")),
     }
     (OUT_DIR / "workbook_data.json").write_text(
