@@ -18,6 +18,26 @@ O racional é simples:
 - 4 quartos faturam mais, porém geram yield muito inferior;
 - 1 quarto no Centro não supera 2 quartos em eficiência nem em receita.
 
+### Veredito sobre a tese preliminar de compactos no Centro
+
+**A tese não é sustentada pela base e não deve ser usada como recomendação final.** A formulação “studio/1 quarto” reúne duas categorias que os dados não permitem tratar da mesma forma:
+
+- **Studios no Centro:** não há nenhuma observação de apartamento com 0 quarto no Centro na base analítica. Portanto, essa parte da tese fica **não validada por falta de amostra**, e não aprovada.
+- **Apartamentos de 1 quarto no Centro:** há 70 pares Airbnb na amostra estrita e 19 ofertas de venda comparáveis. Para essa categoria, os resultados são contrários à tese.
+
+| Métrica | Centro, 1 quarto | Morretes, 2 quartos | Diferença a favor de Morretes |
+|---|---:|---:|---:|
+| Receita proxy mediana — 90 dias | R$ 10,0 mil | R$ 11,6 mil | +15,9% |
+| Receita bruta anual base | R$ 25,8 mil | R$ 29,9 mil | +15,9% |
+| Investimento total mediano | R$ 1,02 mi | R$ 939,5 mil | R$ 80 mil menor |
+| NOI anual mediano | R$ 9,5 mil | R$ 15,0 mil | +57,8% |
+| Yield líquido mediano | 0,93% | 1,60% | +71,2% |
+| Payback operacional | 107 anos | 63 anos | 44 anos menor |
+
+Como teste de robustez, foram feitas 5.000 réplicas de bootstrap, reamostrando separadamente receita Airbnb, preço de venda, condomínio e IPTU. O yield de Morretes 2 quartos ficou acima do Centro 1 quarto em **98,7%** das réplicas. O intervalo de 95% estimado foi **0,69%–1,27%** para Centro 1 quarto e **1,15%–1,95%** para Morretes 2 quartos.
+
+Esse resultado não afirma que nenhum studio individual possa ser um bom negócio. Ele afirma algo mais útil para o comitê: **a tese agregada de compactos no Centro não possui evidência suficiente para substituir a recomendação de apartamentos de 2 quartos, e a parcela observável da tese — 1 quarto — apresenta desempenho inferior.**
+
 ## 1. Dados, cobertura e definição de receita
 
 | Base | Linhas | Cobertura relevante |
@@ -169,5 +189,4 @@ Essa comparação não substitui uma análise de retorno total, mas reforça que
 - **Local para eficiência:** Morretes.
 - **Compra recomendada hoje:** nenhuma no preço mediano; comprar somente com desconto e dados operacionais confirmados.
 - **Tese de compactos no Centro:** rejeitada pela base analisada.
-
 
