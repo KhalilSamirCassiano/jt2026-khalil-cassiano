@@ -1,4 +1,4 @@
-> 🎥 **Vídeo de até 3 minutos:** [INSERIR AQUI O LINK PÚBLICO DO GOOGLE DRIVE]
+> 🎥 **Vídeo de até 3 minutos:** (https://drive.google.com/file/d/177upx9Qc_XGUTSoN9S5Hz1i1KpzYEz0o/view?usp=drive_link)
 
 # Recomendação de investimento em short stay — Itapema (SC)
 
